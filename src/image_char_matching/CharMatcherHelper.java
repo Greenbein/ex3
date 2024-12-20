@@ -47,6 +47,7 @@ public class CharMatcherHelper {
                 (brightness);
         Double higherKey = brightnessAfterNormalisation.ceilingKey
                 (brightness);
+        // need to check in team or forum if exception or check worst case
         if (lowerKey == null)
             return getLowestASCIIChar(this.brightnessAfterNormalisation.get
                     (higherKey));
@@ -57,9 +58,9 @@ public class CharMatcherHelper {
             return absoluteRound(lowerKey,higherKey,brightness);
         }
         else if(flagRound == ROUND_UP){
-            return roundUp(higherKey,brightness);
+            return roundUp(higherKey);
         }
-        return roundDown(lowerKey,brightness);
+        return roundDown(lowerKey);
     }
 
     /**
@@ -146,13 +147,13 @@ public class CharMatcherHelper {
     // ------------------ private -----------------------------------
 
     // strategy of rounding up the num
-    private char roundUp(Double lowerKey, Double higherKey){
+    private char roundUp(Double higherKey){
         return getLowestASCIIChar(this.brightnessAfterNormalisation.get
                     (higherKey));
     }
 
     // strategy of rounding down the num
-    private char roundDown(Double lowerKey, Double higherKey){
+    private char roundDown(Double lowerKey){
         return getLowestASCIIChar(this.brightnessAfterNormalisation.get
                 (lowerKey));
     }
