@@ -9,7 +9,6 @@ public class CharMatcherHelper {
     private static final int SIXTEEN = 16;
     private static final int MAX_START_BRIGHTNESS = 0;
     private static final int MIN_START_BRIGHTNESS = 1;
-    private static final int ROUND_ABS = 0;
     private static final int ROUND_UP = 1;
     private static final int ROUND_DOWN = 2;
     private static final String UP = "up";
@@ -33,7 +32,6 @@ public class CharMatcherHelper {
         buildOriginalBrightnessesTreeMap(charset);
         this.brightnessAfterNormalisation = new TreeMap<>();
         buildLinearisedTree();
-        this.flagRound = ROUND_ABS;
     }
 
     /**
@@ -54,13 +52,14 @@ public class CharMatcherHelper {
         if (higherKey == null)
             return getLowestASCIIChar(this.brightnessAfterNormalisation.get
                     (lowerKey));
-        if(flagRound == ROUND_ABS){
-            return absoluteRound(lowerKey,higherKey,brightness);
+        switch (flagRound) {
+            case ROUND_UP:
+                return roundUp(higherKey);
+            case ROUND_DOWN:
+                return roundDown(lowerKey);
+            default:
+                return absoluteRound(lowerKey,higherKey,brightness);
         }
-        else if(flagRound == ROUND_UP){
-            return roundUp(higherKey);
-        }
-        return roundDown(lowerKey);
     }
 
     /**
@@ -113,21 +112,6 @@ public class CharMatcherHelper {
                 this.brightnessAfterNormalisation.clear();
                 buildLinearisedTree();
             }
-        }
-    }
-
-    /**
-     * this function would decide by given String which strategy we would implement
-     * @param roundCase the way we would round the brightness
-     */
-    public void setRoundFlag(String roundCase){
-        switch (roundCase){
-            case UP:
-                this.flagRound = ROUND_UP;
-            case DOWN:
-                this.flagRound = ROUND_DOWN;
-            case ABS:
-                this.flagRound = ROUND_ABS;
         }
     }
 

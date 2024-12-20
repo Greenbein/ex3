@@ -7,6 +7,7 @@ import java.util.HashSet;
 public class SubImgCharMatcher {
     // check line 9 later
     private final CharMatcherHelper charMatcherHelper;
+    private int roundFlag;
     private static final int ROUND_ABS = 0;
 
     /**
@@ -14,7 +15,8 @@ public class SubImgCharMatcher {
      * @param charset set of chars we would use
      */
     public SubImgCharMatcher(char[] charset){
-        charMatcherHelper = new CharMatcherHelper(charset);
+        this.charMatcherHelper = new CharMatcherHelper(charset);
+        this.roundFlag = ROUND_ABS;
     }
 
     /**
@@ -24,7 +26,7 @@ public class SubImgCharMatcher {
      * ascii value
      */
     public char getCharByImageBrightness(double brightness){
-        return charMatcherHelper.getCharByImageBrightness(brightness, ROUND_ABS);
+        return charMatcherHelper.getCharByImageBrightness(brightness,this.roundFlag);
     }
 
     /**
@@ -52,4 +54,11 @@ public class SubImgCharMatcher {
         return charMatcherHelper.getCharSet();
     }
 
+    /**
+     * change form of round
+     * @param roundFlag round state up/down/abs
+     */
+    public void setRoundFlag(int roundFlag){
+        this.roundFlag = roundFlag;
+    }
 }
