@@ -5,11 +5,10 @@ import java.util.TreeMap;
 import java.util.HashSet;
 
 public class SubImgCharMatcher {
-    // check line 9 later again
+    private static final int ROUND_ABS = 0;
+    // check line 10 later again
     private final CharMatcherHelper charMatcherHelper;
     private int roundFlag;
-    private static final int ROUND_ABS = 0;
-
     /**
      * constructor
      * @param charset set of chars we would use
@@ -26,7 +25,7 @@ public class SubImgCharMatcher {
      * ascii value
      */
     public char getCharByImageBrightness(double brightness){
-        return charMatcherHelper.getCharByImageBrightness(brightness,this.roundFlag);
+        return charMatcherHelper.getCharByImageBrightness(brightness, ROUND_ABS);
     }
 
     /**
@@ -55,10 +54,13 @@ public class SubImgCharMatcher {
     }
 
     /**
-     * change form of round
+     * change type of round
      * @param roundFlag round state up/down/abs
      */
     public void setRoundFlag(int roundFlag){
         this.roundFlag = roundFlag;
     }
+
+
+
 }

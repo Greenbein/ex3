@@ -3,8 +3,6 @@ import ascii_output.ConsoleAsciiOutput;
 import ascii_output.HtmlAsciiOutput;
 import image.Image;
 import image.ImageProcessing;
-import image_char_matching.CharMatcherHelper;
-import image_char_matching.CurrentFlag;
 import image_char_matching.SubImgCharMatcher;
 import java.awt.*;
 import java.io.IOException;
@@ -17,6 +15,9 @@ public class Shell {
     private static final int MIN_ASCII_INDEX = 32;
     private static final int MAX_ASCII_INDEX = 127;
     private static final int RESOLUTION_FACTOR = 2;
+    private static final int ROUND_ABS = 0;
+    private static final int ROUND_UP = 1;
+    private static final int ROUND_DOWN = 2;
 
     //separators
     private static final String INPUT_SEPARATOR = " ";
@@ -39,9 +40,10 @@ public class Shell {
     private static final String ALL = "all";
     private static final String SPACE = "space";
 
-    //res subcommands
+    //res and round subcommands
     private static final String UP = "up";
     private static final String DOWN = "down";
+    private static final String ABS = "abs";
 
     //output subcommands
     private static final String HTML = "html";
@@ -101,6 +103,7 @@ public class Shell {
                     break;
                 case ROUND:
                     round(words);
+                    break;
                 case OUTPUT:
                     output(words);
                     break;
@@ -278,13 +281,28 @@ public class Shell {
 
     //----------------------------------ROUND-------------------------------------------
     private void round(String[] words){
+       if(words.length >= 2){
+           switch (words[1]){
+               case ABS:
+                   matcher.setRoundFlag(ROUND_ABS);
+                   break;
+               case UP:
+                   matcher.setRoundFlag(ROUND_UP);
+                   break;
+               case DOWN:
+                   matcher.setRoundFlag(ROUND_DOWN);
+                   break;
+               default:
+                   System.out.println(INCORRECT_FORMAT);
+                   break;
+           }
+       }
+       System.out.println(INCORRECT_FORMAT);
     }
 
     public static void main(String[] args) throws IOException {
-//        CurrentFlag.currentFlag = 1;
         String givenImageName = args[0];
         Shell myShell = new Shell();
         myShell.run(givenImageName);
-//        System.out.println(CurrentFlag.currentFlag);
     }
 }
