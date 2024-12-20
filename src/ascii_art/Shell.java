@@ -7,7 +7,8 @@ import image_char_matching.SubImgCharMatcher;
 import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
-// rtattatatttatatatattatat
+
+
 
 public class Shell {
     private static final char[] DEFAULT_CHARSET =
@@ -56,7 +57,7 @@ public class Shell {
                 break;
             }
             else if(firstWord.equals("chars")){
-                for (char key : this.matcher.getCharSet()) {
+                for (Character key : this.matcher.getCharSet()) {
                     System.out.print(key + " " );
                 }
                 System.out.println();
