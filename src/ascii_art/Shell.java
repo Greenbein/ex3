@@ -3,6 +3,8 @@ import ascii_output.ConsoleAsciiOutput;
 import ascii_output.HtmlAsciiOutput;
 import image.Image;
 import image.ImageProcessing;
+import image_char_matching.CharMatcherHelper;
+import image_char_matching.CurrentFlag;
 import image_char_matching.SubImgCharMatcher;
 import java.awt.*;
 import java.io.IOException;
@@ -31,6 +33,7 @@ public class Shell {
     private static final String REMOVE = "remove";
     private static final String RES = "res";
     private static final String OUTPUT = "output";
+    private static final String ROUND = "round";
 
     //add subcommands
     private static final String ALL = "all";
@@ -96,6 +99,8 @@ public class Shell {
                 case RES:
                     res(words);
                     break;
+                case ROUND:
+                    round(words);
                 case OUTPUT:
                     output(words);
                     break;
@@ -271,9 +276,15 @@ public class Shell {
 
     }
 
+    //----------------------------------ROUND-------------------------------------------
+    private void round(String[] words){
+    }
+
     public static void main(String[] args) throws IOException {
+//        CurrentFlag.currentFlag = 1;
         String givenImageName = args[0];
         Shell myShell = new Shell();
         myShell.run(givenImageName);
+//        System.out.println(CurrentFlag.currentFlag);
     }
 }

@@ -51,4 +51,5 @@ public class SubImgCharMatcher {
     public char[] getCharSet(){
         return charMatcherHelper.getCharSet();
     }
+
 }
