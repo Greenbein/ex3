@@ -54,7 +54,7 @@ public class CharMatcherHelper {
             return getLowestASCIIChar(this.brightnessAfterNormalisation.get
                     (lowerKey));
         if(flagRound == ROUND_ABS){
-            return absoluteRoundUp(lowerKey,higherKey,brightness);
+            return absoluteRound(lowerKey,higherKey,brightness);
         }
         else if(flagRound == ROUND_UP){
             return roundUp(higherKey,brightness);
@@ -158,7 +158,7 @@ public class CharMatcherHelper {
     }
 
     // strategy of rounding by absolute value
-    private char absoluteRoundUp(Double lowerKey, Double higherKey, double brightness){
+    private char absoluteRound(Double lowerKey, Double higherKey, double brightness){
         if (Math.abs(lowerKey - brightness) <= Math.abs(higherKey - brightness)){
             return getLowestASCIIChar(this.brightnessAfterNormalisation.get
                     (lowerKey));
