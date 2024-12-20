@@ -53,6 +53,7 @@ public class Shell {
     private static final String INCORRECT_FORMAT = "Did not add due to incorrect format.";
 
 
+
     // the array that contains chars that represent the output for the image,
     // current resolution and current charSet in the matcher
     private char[][] currentOutput;

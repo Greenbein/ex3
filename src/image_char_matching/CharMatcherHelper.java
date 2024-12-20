@@ -269,6 +269,4 @@ public class CharMatcherHelper {
         this.minBrightness = MIN_START_BRIGHTNESS;
         this.maxBrightness = MAX_START_BRIGHTNESS;
     }
-
-    //aaaaaaaaaaaaaaaaaa
 }
