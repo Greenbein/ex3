@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.HashSet;
 
 
-
 public class Shell {
     private static final char[] DEFAULT_CHARSET =
             {'0','1','2','3','4','5','6','7','8','9'};
@@ -57,7 +56,7 @@ public class Shell {
                 break;
             }
             else if(firstWord.equals("chars")){
-                for (Character key : this.matcher.getCharSet()) {
+                for (char key : this.matcher.getCharSet()) {
                     System.out.print(key + " " );
                 }
                 System.out.println();
