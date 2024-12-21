@@ -193,7 +193,7 @@ public class Shell {
         matcher.addChar(CHAR_SPACE);
     }
 
-    //check if the second word after 'add' is a range of chars
+    //check if the second word after 'add'/'remove' is a range of chars
     private boolean isRange(String str){
         if(str.length()==3){
             if(str.charAt(1)==CHAR_RANGE_SEPARATOR){
@@ -228,18 +228,71 @@ public class Shell {
 
     //---------------------------------REMOVE----------------------------------------
     // removes a certain valid char from charset
-    private void remove(String[] inputWords){
-        if(inputWords[1].length() != 1){
+    private void remove(String[] inputWords) {
+        if (inputWords.length >= 2) {
+            processRemoveCommand(inputWords[1]);
+        } else {
             throw new IncorrectFormatRemoveException();
         }
-        char c = inputWords[1].charAt(0);
-        if(c < MIN_ASCII_INDEX || c > MAX_ASCII_INDEX){
+    }
+
+    //remove new items from matcher's char treeMap, according to remove command type
+    private void processRemoveCommand(String secondWord){
+        if(secondWord.length() == 1){
+            char c = secondWord.charAt(0);
+            removeChar(c);
+        }
+        else if(secondWord.equals(ALL)){
+            removeAllChars();
+        }
+        else if(secondWord.equals(SPACE)){
+            removeSpace();
+        }
+        else if(isRange(secondWord)){
+            removeRange(secondWord);
+        }
+        else{
+            throw new IncorrectFormatRemoveException();
+        }
+    }
+
+    //remove new char from HashMap of characters in the matcher
+    private void removeChar(char c){
+        if(c < MIN_ASCII_INDEX ||c > MAX_ASCII_INDEX){
             throw new IncorrectFormatRemoveException();
         }
         matcher.removeChar(c);
     }
 
-    //remove all chars from charSet
+    // remove all chars from ' ' to '~' of HashMap of characters in the matcher
+    private void removeAllChars(){
+        for(int i = MIN_ASCII_INDEX; i < MAX_ASCII_INDEX + 1;i++){
+            matcher.removeChar((char)i);
+        }
+    }
+
+    // remove ' ' to HashMap of characters in the matcher
+    private void removeSpace(){
+        matcher.removeChar(CHAR_SPACE);
+    }
+
+    // removes all chars form the first char in word (word[0]) to the last char (word[2])
+    private void removeRange(String word){
+        int cMin = word.charAt(0);
+        int cMax = word.charAt(2);
+        if(cMin > cMax){
+            int temp = cMin;
+            cMin = cMax;
+            cMax = temp;
+        }
+        if(cMin < MIN_ASCII_INDEX||cMax > MAX_ASCII_INDEX){
+            throw new IncorrectFormatRemoveException();
+        }
+        for(int c = cMin; c<=cMax; c++){
+            matcher.removeChar((char)c);
+        }
+    }
+
     //----------------------------------CHARS------------------------------------------
     //print all chars from the matcher
     private void printAllChars(){
