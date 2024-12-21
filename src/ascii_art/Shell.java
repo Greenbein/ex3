@@ -1,6 +1,7 @@
 package ascii_art;
 import ascii_output.ConsoleAsciiOutput;
 import ascii_output.HtmlAsciiOutput;
+import exceptions.*;
 import image.Image;
 import image.ImageProcessing;
 import image_char_matching.SubImgCharMatcher;
@@ -13,7 +14,7 @@ public class Shell {
             {'0','1','2','3','4','5','6','7','8','9'};
     private static final int DEFAULT_RESOLUTION = 2;
     private static final int MIN_ASCII_INDEX = 32;
-    private static final int MAX_ASCII_INDEX = 127;
+    private static final int MAX_ASCII_INDEX = 126;
     private static final int RESOLUTION_FACTOR = 2;
     private static final int ROUND_ABS = 0;
     private static final int ROUND_UP = 1;
@@ -90,39 +91,46 @@ public class Shell {
             String input = KeyboardInput.readLine();
             String[] words = input.split(INPUT_SEPARATOR);
             String firstWord = words[0];
-            switch(firstWord){
-                case EXIT:
-                    ok = false;
-                    break;
-                case CHARS:
-                    printAllChars();
-                    break;
-                case ADD:
-                    add(words);
-                    break;
-                case REMOVE:
-                    remove(words);
-                    break;
-                case RES:
-                    res(words);
-                    break;
-                case ROUND:
-                    round(words);
-                    break;
-                case OUTPUT:
-                    output(words);
-                    break;
-                case ASCII_ART:
-                    asciiArt();
-                    break;
-                default:
-                    System.out.println(INCORRECT_COMMAND);
+            try{
+                switch(firstWord){
+                    case EXIT:
+                        ok = false;
+                        break;
+                    case CHARS:
+                        printAllChars();
+                        break;
+                    case ADD:
+                        add(words);
+                        break;
+                    case REMOVE:
+                        remove(words);
+                        break;
+                    case RES:
+                        res(words);
+                        break;
+                    case ROUND:
+                        round(words);
+                        break;
+                    case OUTPUT:
+                        output(words);
+                        break;
+                    case ASCII_ART:
+                        asciiArt();
+                        break;
+                    default:
+                        throw new InccorectCommandException();
+                }
+            }
+            catch(IncorrectFormatAddException|IncorrectFormatRemoveException|
+            ExceedingBoundariesResException|IncorrectFormatResException|
+            IncorrectFormatRoundException|IncorrectFormatOutputException|
+            CharsetToSmallException e){
+                System.err.println(e.getMessage());
             }
         }
-
     }
 
-    //
+    // creates default values and default char Image
     private void prepareBeforeRun(String imageName) throws IOException {
         Image image;
         try{
@@ -147,7 +155,7 @@ public class Shell {
             processAddCommand(inputWords[1]);
         }
         else{
-            System.out.println(INCORRECT_FORMAT);
+            throw new IncorrectFormatAddException();
         }
     }
 
@@ -167,21 +175,21 @@ public class Shell {
             addRange(secondWord);
         }
         else{
-            System.out.println(INCORRECT_FORMAT);
+            throw new IncorrectFormatAddException();
         }
     }
 
     //add new char to HashMap of characters in the matcher
     private void addChar(char c){
-       if(c<MIN_ASCII_INDEX ||c>MAX_ASCII_INDEX-1){
-           System.out.println(INCORRECT_FORMAT);
+       if(c<MIN_ASCII_INDEX ||c > MAX_ASCII_INDEX){
+           throw new IncorrectFormatAddException();
        }
        matcher.addChar(c);
     }
 
     // add all chars from ' ' to '~' to HashMap of characters in the matcher
     private void addAllChars(){
-        for(int i = MIN_ASCII_INDEX; i<MAX_ASCII_INDEX;i++){
+        for(int i = MIN_ASCII_INDEX; i < MAX_ASCII_INDEX + 1;i++){
             matcher.addChar((char)i);
         }
     }
@@ -197,8 +205,8 @@ public class Shell {
             if(str.charAt(1)==CHAR_RANGE_SEPARATOR){
                 char first = str.charAt(0);
                 char second = str.charAt(1);
-                boolean firstOk = first>MIN_ASCII_INDEX-1 && first<MAX_ASCII_INDEX;
-                boolean secondOk = second>MIN_ASCII_INDEX-1&& second<MAX_ASCII_INDEX;
+                boolean firstOk = first >=MIN_ASCII_INDEX  && first <= MAX_ASCII_INDEX;
+                boolean secondOk = second >= MIN_ASCII_INDEX && second <= MAX_ASCII_INDEX;
                 if(firstOk && secondOk) {
                     return true;
                 }
@@ -216,18 +224,28 @@ public class Shell {
             cMin = cMax;
             cMax = temp;
         }
+        if(cMin < MIN_ASCII_INDEX||cMax > MAX_ASCII_INDEX){
+            throw new IncorrectFormatAddException();
+        }
         for(int c = cMin; c<=cMax; c++){
             matcher.addChar((char)c);
         }
     }
 
     //---------------------------------REMOVE----------------------------------------
+    // removes a certain valid char from charset
     private void remove(String[] inputWords){
-        if(inputWords[1].length() == 1){
-            char c = inputWords[1].charAt(0);
-            matcher.removeChar(c);
+        if(inputWords[1].length() != 1){
+            throw new IncorrectFormatRemoveException();
         }
+        char c = inputWords[1].charAt(0);
+        if(c < MIN_ASCII_INDEX || c > MAX_ASCII_INDEX){
+            throw new IncorrectFormatRemoveException();
+        }
+        matcher.removeChar(c);
     }
+
+    //---------------------------------CHARS----------------------------------------
     //----------------------------------CHARS------------------------------------------
     //print all chars from the matcher
     private void printAllChars(){
@@ -248,17 +266,23 @@ public class Shell {
             if(this.currentResolution*RESOLUTION_FACTOR<=maxResolution){
                 this.currentResolution *= RESOLUTION_FACTOR;
                 printResolution();
+                return;
             }
-            return;
+            else{
+                throw new ExceedingBoundariesResException();
+            }
         }
         if(words[1].equals(DOWN)){
             if(this.currentResolution/RESOLUTION_FACTOR>=minResolution){
                 this.currentResolution /= RESOLUTION_FACTOR;
                 printResolution();
+                return;
             }
-            return;
+            else{
+                throw new ExceedingBoundariesResException();
+            }
         }
-        System.out.println(INCORRECT_FORMAT);
+        throw new IncorrectFormatResException();
     }
 
     //print current resolution
@@ -267,6 +291,7 @@ public class Shell {
     }
 
     //----------------------------------OUTPUT------------------------------------------
+    // switches output destination
     private void output(String[]words){
         if(words.length >= 2){
             if(words[1].equals(HTML)){
@@ -276,10 +301,10 @@ public class Shell {
                 this.output = CONSOLE;
             }
             else{
-                System.out.println(INCORRECT_FORMAT);
+               throw new IncorrectFormatOutputException();
             }
         }
-        System.out.println(INCORRECT_FORMAT);
+        throw new IncorrectFormatOutputException();
     }
 
     //----------------------------------ROUND-------------------------------------------
@@ -296,19 +321,17 @@ public class Shell {
                    matcher.setRoundFlag(ROUND_DOWN);
                    break;
                default:
-                   System.out.println(INCORRECT_FORMAT);
-                   break;
+                   throw new IncorrectFormatRoundException();
            }
        }
-       System.out.println(INCORRECT_FORMAT);
+        throw new IncorrectFormatRoundException();
     }
 
     //----------------------------------ASCII------------------------------------------
     private void asciiArt(){
         char[] charSet = this.matcher.getCharSet();
         if(charSet.length<MIN_CHARSET_LENGTH){
-            System.out.println(SMALL_CHARSET);
-            return;
+            throw new CharsetToSmallException();
         }
         AsciiArtAlgorithm ascii = new AsciiArtAlgorithm(this.imgArr,this.currentResolution,charSet);
         this.currentCharImage = ascii.run();
