@@ -18,6 +18,7 @@ public class Shell {
     private static final int ROUND_ABS = 0;
     private static final int ROUND_UP = 1;
     private static final int ROUND_DOWN = 2;
+    private static final int MIN_CHARSET_LENGTH = 2;
 
     //separators
     private static final String INPUT_SEPARATOR = " ";
@@ -35,6 +36,7 @@ public class Shell {
     private static final String RES = "res";
     private static final String OUTPUT = "output";
     private static final String ROUND = "round";
+    private static final String ASCII_ART = "asciiArt";
 
     //add subcommands
     private static final String ALL = "all";
@@ -56,17 +58,19 @@ public class Shell {
     //Error notifications
     private static final String INCORRECT_COMMAND = "Did not execute due to incorrect command.";
     private static final String INCORRECT_FORMAT = "Did not add due to incorrect format.";
+    private static final String SMALL_CHARSET = "Did not execute. Charset is too small.";
 
 
 
     // the array that contains chars that represent the output for the image,
     // current resolution and current charSet in the matcher
-    private char[][] currentOutput;
+    private char[][] currentCharImage;
     private final SubImgCharMatcher matcher;
     private int maxResolution;
     private int minResolution;
     private Color[][] imgArr;
     private int currentResolution;
+    private String output;
 
     /**
      * Constructor os Shell
@@ -74,6 +78,7 @@ public class Shell {
     public Shell() {
         this.matcher = new SubImgCharMatcher(DEFAULT_CHARSET);
         this.currentResolution = DEFAULT_RESOLUTION;
+        this.output = CONSOLE;
     }
 
     //
@@ -107,6 +112,9 @@ public class Shell {
                 case OUTPUT:
                     output(words);
                     break;
+                case ASCII_ART:
+                    asciiArt();
+                    break;
                 default:
                     System.out.println(INCORRECT_COMMAND);
             }
@@ -123,7 +131,7 @@ public class Shell {
             this.imgArr = ip.convertImageToColorArr(image);
             AsciiArtAlgorithm a =  new AsciiArtAlgorithm(this.imgArr,
                     DEFAULT_RESOLUTION, DEFAULT_CHARSET);
-            this.currentOutput = a.run();
+            this.currentCharImage = a.run();
             this.maxResolution = image.getWidth();
             this.minResolution = Math.max(1,
                     (image.getWidth()/image.getHeight()));
@@ -239,9 +247,6 @@ public class Shell {
         if(words[1].equals(UP)){
             if(this.currentResolution*RESOLUTION_FACTOR<=maxResolution){
                 this.currentResolution *= RESOLUTION_FACTOR;
-                AsciiArtAlgorithm resUp =  new AsciiArtAlgorithm(this.imgArr,
-                        this.currentResolution,this.matcher.getCharSet());
-                this.currentOutput = resUp.run();
                 printResolution();
             }
             return;
@@ -249,9 +254,6 @@ public class Shell {
         if(words[1].equals(DOWN)){
             if(this.currentResolution/RESOLUTION_FACTOR>=minResolution){
                 this.currentResolution /= RESOLUTION_FACTOR;
-                AsciiArtAlgorithm resDown =  new AsciiArtAlgorithm(this.imgArr,
-                        this.currentResolution,this.matcher.getCharSet());
-                this.currentOutput = resDown.run();
                 printResolution();
             }
             return;
@@ -266,17 +268,18 @@ public class Shell {
 
     //----------------------------------OUTPUT------------------------------------------
     private void output(String[]words){
-        if(words.length == 2){
+        if(words.length >= 2){
             if(words[1].equals(HTML)){
-                HtmlAsciiOutput htmlAsciiOutput = new HtmlAsciiOutput(FILENAME,FONT_NAME);
-                htmlAsciiOutput.out(this.currentOutput);
+                this.output = HTML;
             }
             else if(words[1].equals(CONSOLE)){
-                ConsoleAsciiOutput consoleAsciiOutput = new ConsoleAsciiOutput();
-                consoleAsciiOutput.out(this.currentOutput);
+                this.output = CONSOLE;
+            }
+            else{
+                System.out.println(INCORRECT_FORMAT);
             }
         }
-
+        System.out.println(INCORRECT_FORMAT);
     }
 
     //----------------------------------ROUND-------------------------------------------
@@ -298,6 +301,27 @@ public class Shell {
            }
        }
        System.out.println(INCORRECT_FORMAT);
+    }
+
+    //----------------------------------ASCII------------------------------------------
+    private void asciiArt(){
+        char[] charSet = this.matcher.getCharSet();
+        if(charSet.length<MIN_CHARSET_LENGTH){
+            System.out.println(SMALL_CHARSET);
+            return;
+        }
+        AsciiArtAlgorithm ascii = new AsciiArtAlgorithm(this.imgArr,this.currentResolution,charSet);
+        this.currentCharImage = ascii.run();
+        switch (this.output){
+            case HTML:
+                HtmlAsciiOutput htmlAsciiOutput = new HtmlAsciiOutput(FILENAME,FONT_NAME);
+                htmlAsciiOutput.out(this.currentCharImage);
+                break;
+            default:
+                ConsoleAsciiOutput consoleAsciiOutput = new ConsoleAsciiOutput();
+                consoleAsciiOutput.out(this.currentCharImage);
+                break;
+        }
     }
 
     public static void main(String[] args) throws IOException {
