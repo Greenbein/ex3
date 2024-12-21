@@ -124,6 +124,7 @@ public class CharMatcherHelper {
         int index = 0;
         for(Character key : this.originalBrightnesses.keySet()) {
             chars[index] = key;
+            index++;
         }
         return chars;
     }

@@ -12,6 +12,7 @@ public class Shell {
     //Default parameters for AsciiAlgorithm constructor
     private static final char[] DEFAULT_CHARSET =
             {'0','1','2','3','4','5','6','7','8','9'};
+    //REMEMBER
     private static final int DEFAULT_RESOLUTION = 2;
     private static final int MIN_ASCII_INDEX = 32;
     private static final int MAX_ASCII_INDEX = 126;
@@ -54,14 +55,7 @@ public class Shell {
 
     //additional constants for output
     private static final String FILENAME = "out.html";
-    private static final String FONT_NAME = "New Courier";
-
-    //Error notifications
-    private static final String INCORRECT_COMMAND = "Did not execute due to incorrect command.";
-    private static final String INCORRECT_FORMAT = "Did not add due to incorrect format.";
-    private static final String SMALL_CHARSET = "Did not execute. Charset is too small.";
-
-
+    private static final String FONT_NAME = "Courier New";
 
     // the array that contains chars that represent the output for the image,
     // current resolution and current charSet in the matcher
@@ -125,7 +119,7 @@ public class Shell {
             ExceedingBoundariesResException|IncorrectFormatResException|
             IncorrectFormatRoundException|IncorrectFormatOutputException|
             CharsetToSmallException e){
-                System.err.println(e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -245,12 +239,13 @@ public class Shell {
         matcher.removeChar(c);
     }
 
-    //---------------------------------CHARS----------------------------------------
+    //remove all chars from charSet
     //----------------------------------CHARS------------------------------------------
     //print all chars from the matcher
     private void printAllChars(){
-        for (Character key : this.matcher.getCharSet()) {
-            System.out.print(key + PRINT_SEPARATOR);
+        char [] charSet = this.matcher.getCharSet();
+        for (int i = 0; i < charSet.length; i++) {
+            System.out.print(charSet[i] + PRINT_SEPARATOR);
         }
         System.out.println();
     }
@@ -287,7 +282,7 @@ public class Shell {
 
     //print current resolution
     private void printResolution(){
-        System.out.println("Resolution set to"+this.currentResolution+".");
+        System.out.println("Resolution set to "+this.currentResolution+".");
     }
 
     //----------------------------------OUTPUT------------------------------------------
@@ -296,9 +291,11 @@ public class Shell {
         if(words.length >= 2){
             if(words[1].equals(HTML)){
                 this.output = HTML;
+                return;
             }
             else if(words[1].equals(CONSOLE)){
                 this.output = CONSOLE;
+                return;
             }
             else{
                throw new IncorrectFormatOutputException();
@@ -313,13 +310,13 @@ public class Shell {
            switch (words[1]){
                case ABS:
                    matcher.setRoundFlag(ROUND_ABS);
-                   break;
+                   return;
                case UP:
                    matcher.setRoundFlag(ROUND_UP);
-                   break;
+                   return;
                case DOWN:
                    matcher.setRoundFlag(ROUND_DOWN);
-                   break;
+                   return;
                default:
                    throw new IncorrectFormatRoundException();
            }
@@ -353,3 +350,7 @@ public class Shell {
         myShell.run(givenImageName);
     }
 }
+
+
+
+
