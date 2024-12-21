@@ -15,21 +15,23 @@ public class ImageProcessing {
      * @return new padded image
      */
     public Color[][]imagePadding(Color[][]image){
-        if(image == null) return null;
         int originalRowsNumber = image.length;
         int originalColsNumber = image[0].length;
         int newRowsNumber = pixelsAmountAfterPadding(originalRowsNumber);
         int newColumnsNumber = pixelsAmountAfterPadding(originalColsNumber);
-        if(originalRowsNumber != newRowsNumber ||
-                originalColsNumber != newColumnsNumber){
-            Color[][] newImage =
-                    createWhiteImage(newRowsNumber, newColumnsNumber);
-            for(int i = 0; i < image.length; i++){
-                insertOriginalColors(newImage[i],image[i]);
-            }
-            return newImage;
+        if(originalRowsNumber == newRowsNumber && originalColsNumber == newColumnsNumber){
+            return image;
         }
-        return image;
+        Color[][] newImage =
+                   createWhiteImage(newRowsNumber, newColumnsNumber);
+        int StartRow = (newRowsNumber - originalRowsNumber)/2;
+        int StartCol = (newColumnsNumber - originalColsNumber)/2;
+        for(int row = StartRow; row < newRowsNumber; row++){
+            for(int col = StartCol; col < newColumnsNumber; col++){
+                newImage[row][col] = image[row - StartRow][col - StartCol];
+            }
+        }
+        return newImage;
     }
 
     /**
@@ -89,12 +91,6 @@ public class ImageProcessing {
         return padeddPixelsNumber;
     }
 
-    // inserts original colors into each white row that relevant
-    private void insertOriginalColors(Color[]newRow, Color[]originalRow){
-        for(int i=0; i<originalRow.length; i++){
-            newRow[i] = originalRow[i];
-        }
-    }
 
     // creates white image with the size of padded values
     private Color[][] createWhiteImage(int rows, int cols){
@@ -128,7 +124,6 @@ public class ImageProcessing {
                 + color.getBlue() * THIRD_COEFFICIENT;
     }
 
-    ///orbhehewonvnvjeqnipnef
     /// CHECK WIDTH AND HEIGHT PROBLEM
     public Color[][] convertImageToColorArr(Image image){
         Color[][] picture = new Color[image.getWidth()][image.getHeight()];
@@ -139,46 +134,4 @@ public class ImageProcessing {
         }
         return picture;
     }
-
-    //print sub images array
-//    public void printSubImages(Color[][][]subImagesArray, int squareWidth){
-//        int numSquares = subImagesArray.length;
-//        int squaresPerRow = (int) Math.sqrt(numSquares); // Assuming it's a perfect square layout
-//        if (squaresPerRow * squaresPerRow != numSquares) {
-//            System.out.println("Squares are not arranged in a perfect grid.");
-//            return;
-//        }
-//
-//        for (int rowBlock = 0; rowBlock < squaresPerRow; rowBlock++) {
-//            for (int subRow = 0; subRow < squareWidth; subRow++) { // Each sub-row of the square
-//                for (int squareInRow = 0; squareInRow < squaresPerRow; squareInRow++) {
-//                    int squareIndex = rowBlock * squaresPerRow + squareInRow;
-//                    for (int col = 0; col < squareWidth; col++) {
-//                        Color pixel = subImagesArray[squareIndex][subRow][col];
-//                        if (pixel != null) {
-//                            System.out.print(getColorChar(pixel));
-//                        } else {
-//                            System.out.print(" ");
-//                        }
-//                    }
-//                    System.out.print("        "); // Space between squares
-//                }
-//                System.out.println();
-//                // End of sub-row
-//            }
-//            System.out.println();
-//            System.out.println();
-//            System.out.println();
-//        }
-//    }
-
-//    private char getColorChar(Color color) {
-//        int brightness = (color.getRed() + color.getGreen() + color.getBlue()) / 3;
-//        if (brightness == 255) {
-//            return 'w';
-//        } else{
-//            return 'b';
-//        }
-//    }
-
 }
